@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<meta charset="UTF-8">
+<title>Chua Express</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<style>
+
+body{
+margin:0;
+font-family:Arial;
+background:#f5f5f5;
+}
+
+header{
+background:#d70f64;
+color:white;
+display:flex;
+justify-content:space-between;
+padding:12px 20px;
+align-items:center;
+}
+
+.header-right{
+display:flex;
+gap:10px;
+align-items:center;
+}
+
+#userStatus{
+font-size:0.95rem;
+opacity:0.9;
+}
+
+button{
+cursor:pointer;
+}
+
+.login-panel{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,0.45);
+display:flex;
+align-items:center;
+justify-content:center;
+visibility:hidden;	opacity:0;
+transition:.2s ease;
+z-index:50;
+}
+
+.login-panel.active{
+visibility:visible;	opacity:1;
+}
+
+.login-card{
+background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+padding:24px;
+border-radius:16px;
+width:90%;
+max-width:360px;
+box-shadow:0 18px 40px rgba(0,0,0,0.18);
+}
+
+.login-card h3{
+margin:0 0 16px;
+font-size:1.3rem;
+}
+
+.login-card label{
+display:block;
+margin-bottom:6px;
+font-size:0.95rem;
+color:#333;
+}
+
+.login-card input{
+width:100%;
+padding:10px 12px;
+border:1px solid #ddd;
+border-radius:10px;
+font-size:0.95rem;
+margin-bottom:14px;
+}
+
+.social-login{
+margin-bottom:16px;
+}
+
+.social-login button{
+width:100%;
+padding:10px 12px;
+border:none;
+border-radius:10px;
+font-size:0.95rem;
+font-weight:700;
+margin-bottom:8px;
+cursor:pointer;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:8px;
+}
+
+.social-login .facebook{
+background:#1877f2;
+color:#fff;
+}
+
+.social-login .instagram{
+background:linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%);
+color:#fff;
+}
+
+.social-login .google{
+background:#fff;
+color:#333;
+border:1px solid #ddd;
+}
+
+.login-buttons{
+display:flex;
+gap:10px;
+}
+
+.login-buttons button{
+flex:1;
+padding:12px 0;
+border:none;
+border-radius:10px;
+color:#fff;
+font-weight:700;
+background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+}
+
+.login-buttons button.secondary{
+background:#888;
+}
+
+.menu{
+padding:20px;
+}
+
+.food-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:15px;
+}
+
+.food{
+background:white;
+border-radius:10px;
+overflow:hidden;
+box-shadow:0 2px 8px rgba(0,0,0,0.1);
+}
+
+.food img{
+width:100%;
+height:150px;
+object-fit:cover;
+}
+
+.food .info{
+padding:10px;
+}
+
+.food button{
+background:#d70f64;
+border:none;
+color:white;
+padding:8px;
+width:100%;
+border-radius:5px;
+}
+
+.cart{
+position:fixed;
+right:0;
+top:0;
+width:360px;
+max-width:100%;
+height:100%;
+background:#fff;
+padding:20px;
+box-shadow:-5px 0 22px rgba(0,0,0,0.18);
+transform:translateX(110%);
+transition:.28s ease;
+overflow:auto;
+}
+
+.cart.active{
+transform:translateX(0);
+}
+
+.cart-header{
+display:flex;
+justify-content:space-between;
+align-items:center;
+gap:12px;
+margin-bottom:18px;
+padding-bottom:10px;
+border-bottom:1px solid #f0f0f0;
+}
+
+.cart-header h3{
+margin:0;
+font-size:1.25rem;
+}
+
+.cart-counter{
+font-size:0.95rem;
+color:#666;
+}
+
+.cart-header button{
+background:#d70f64;
+border:none;
+color:#fff;
+padding:10px 14px;
+border-radius:8px;
+font-size:0.95rem;
+}
+
+#cartItems{
+margin-top:14px;
+}
+
+.cart-empty{
+margin:22px 0;
+padding:18px 14px;
+background:#fdf0f6;
+border:1px solid #f3d6e8;
+border-radius:12px;
+color:#7a4a6b;
+text-align:center;
+}
+
+.cart-item{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:12px;
+padding:12px 10px;
+background:#fafafa;
+border-radius:10px;
+box-shadow:0 1px 3px rgba(0,0,0,0.05);
+}
+
+.cart-item span:first-child{
+max-width:160px;
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap;
+display:inline-block;
+}
+
+.remove{
+color:#d70f64;
+cursor:pointer;
+font-weight:700;
+}
+
+.payment{
+margin-top:14px;
+}
+
+.payment label{
+display:block;
+margin-bottom:6px;
+font-size:0.95rem;
+color:#444;
+}
+
+.payment-options{
+display:flex;
+flex-direction:column;
+gap:8px;
+}
+
+.payment-option{
+display:flex;
+align-items:center;
+gap:8px;
+padding:8px 12px;
+border:1px solid #ddd;
+border-radius:10px;
+cursor:pointer;
+transition:.2s;
+}
+
+.payment-option:hover{
+border-color:#d70f64;
+}
+
+.payment-option input[type="radio"]{
+display:none;
+}
+
+.payment-option input[type="radio"]:checked + .option-content{
+background:#d70f64;
+color:#fff;
+}
+
+.option-content{
+display:flex;
+align-items:center;
+gap:8px;
+width:100%;
+padding:4px 8px;
+border-radius:8px;
+}
+
+.payment select{
+width:100%;
+padding:10px 12px;
+border-radius:10px;
+border:1px solid #ddd;
+font-size:0.95rem;
+}
+
+.payment input{
+width:100%;
+padding:10px 12px;
+border-radius:10px;
+border:1px solid #ddd;
+font-size:0.95rem;
+margin-top:6px;
+}
+
+.cart-summary{
+margin-top:20px;
+}
+
+.cart-actions{
+display:flex;
+gap:10px;
+margin-top:18px;
+}
+
+.cart-actions button{
+flex:1;
+padding:12px 0;
+border:none;
+border-radius:10px;
+color:#fff;
+font-weight:700;
+}
+
+.cart-actions .clear{
+background:#888;
+}
+
+.cart-actions .checkout{
+background:#d70f64;
+}
+
+.receipt{
+background:#fff;
+padding:10px;
+margin-top:10px;
+border:1px dashed #aaa;
+display:none;
+}
+
+footer{
+background:#222;
+color:white;
+text-align:center;
+padding:10px;
+margin-top:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<header>
+<h2>Chua Express</h2>
+<div class="header-right">
+<span id="userStatus">User: Logged out</span>
+<button onclick="toggleCart()">🛒 Cart</button>
+<button id="userButton" onclick="openUser()">Log In</button>
+</div>
+</header>
+
+<div class="login-panel" id="loginPanel">
+<div class="login-card">
+<h3>Log In</h3>
+<div class="social-login">
+<button class="facebook" onclick="loginWithFacebook()">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+<path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+</svg>
+Continue with Facebook
+</button>
+<button class="instagram" onclick="loginWithInstagram()">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+<path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+</svg>
+Continue with Instagram
+</button>
+<button class="google" onclick="loginWithGoogle()">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+<path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+<path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+<path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+<path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+</svg>
+Continue with Google
+</button>
+</div>
+<div style="text-align:center; margin:12px 0; color:#666; font-size:0.9rem;">or</div>
+<label for="loginUsername">Username</label>
+<input id="loginUsername" type="text" placeholder="admin" />
+<label for="loginPassword">Password</label>
+<input id="loginPassword" type="password" placeholder="••••••••" />
+<div class="login-buttons">
+<button onclick="submitLogin()">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+<path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm3 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z"/>
+</svg>
+Sign In
+</button>
+<button class="secondary" onclick="toggleLoginPanel(false)">Cancel</button>
+</div>
+</div>
+</div>
+
+<section class="menu">
+
+<h3>Popular Foods</h3>
+
+<div class="food-grid" id="foods"></div>
+
+</section>
+
+<div class="cart" id="cart">
+
+<div class="cart-header">
+<div>
+<h3>Cart</h3>
+<div class="cart-counter" id="itemCount">0 items</div>
+</div>
+<button onclick="toggleCart()">✕</button>
+</div>
+
+<div id="cartItems"></div>
+<div class="cart-empty" id="cartEmpty">Your cart is empty. Add tasty items to start the best order.</div>
+
+<div class="cart-summary">
+<h4>Total ₱<span id="total">0</span></h4>
+<div class="payment">
+<label for="paymentMethod">Payment method</label>
+<div class="payment-options">
+<label class="payment-option">
+<input type="radio" name="paymentMethod" value="Cash on Delivery" checked />
+<div class="option-content">
+💵 Cash on Delivery
+</div>
+</label>
+<label class="payment-option">
+<input type="radio" name="paymentMethod" value="GCash" />
+<div class="option-content">
+<svg width="40" height="16" viewBox="0 0 40 16">
+<text x="0" y="12" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#0066cc">GCash</text>
+</svg>
+</div>
+</label>
+<label class="payment-option">
+<input type="radio" name="paymentMethod" value="PayMaya" />
+<div class="option-content">
+<svg width="50" height="16" viewBox="0 0 50 16">
+<text x="0" y="12" font-family="Arial, sans-serif" font-size="12" font-weight="bold" fill="#8b5cf6">PayMaya</text>
+</svg>
+</div>
+</label>
+</div>
+<label for="deliveryLocation">Delivery location</label>
+<input id="deliveryLocation" type="text" placeholder="Enter delivery address or landmark" />
+</div>
+</div>
+
+<div class="cart-actions">
+<button class="clear" onclick="clearCart()">Clear</button>
+<button class="checkout" onclick="checkout()">Place Order</button>
+</div>
+
+<div class="receipt" id="receipt"></div>
+
+<div class="tracker" id="tracker" style="display:none;">
+🚚 Delivery Status: <span id="status">Preparing</span>
+</div>
+
+</div>
+
+<footer>
+© 2026 Chua Express
+</footer>
+
+<script>
+const foods=[
+
+{name:"Burger Meal",price:150,img:"https://images.unsplash.com/photo-1550547660-d9450f859349"},
+{name:"Noodle Bowl",price:120,img:"https://images.unsplash.com/photo-1585032226651-759b368d7246"},
+{name:"Fried Chicken",price:180,img:"https://food.fnr.sndimg.com/content/dam/images/food/fullset/2023/2/23/FNK_Indian-Fried-Chicken_s4x3.jpg.rend.hgtvcom.1280.720.suffix/1677264108617.webp"},
+{name:"Pizza Slice",price:140,img:"https://www.midwestliving.com/thmb/eWjJ8z0GCQcWkb2FRfK1usOz3Eo=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/101759388_chicago-style-deep-dish-pizza-3e28af461bba4bb4858d5c467fbd9976.jpg"},
+{name:"Milk Tea",price:90,img:"https://images.unsplash.com/photo-1558857563-b371033873b8"},
+{name:"Hotdog Sandwich",price:80,img:"https://potatorolls.com/wp-content/uploads/2020/10/Basic-Hot-Dogs-960x640.jpg"},
+{name:"Spaghetti",price:110,img:"https://www.allrecipes.com/thmb/rwm6TOaq6LK0zkhusNHAc39sTqI=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/19356-spaghetti-italian-VAT-Beauty-2x1-4b6728861c0b44afbf95c7305d8e6a63.jpg"},
+{name:"Fries",price:70,img:"https://images.unsplash.com/photo-1576107232684-1279f390859f"},
+{name:"Takoyaki",price:95,img:"https://www.finedininglovers.com/sites/default/files/styles/1_1_768x768/public/recipe_content_images/takoyaki-recipe%C2%A9iStock.jpg.webp?itok=gnYZWAY3"},
+{name:"Chicken Wings",price:160,img:"https://www.allrecipes.com/thmb/IAGTZKbsS1YkRcbA-MlKASk7T5w=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/241152-fried-chicken-wings-ddmfs-hero-1x2-1261-7201cc37727446adb6698c269585d5a0.jpg"},
+{name:"Sushi Roll",price:220,img:"https://images.unsplash.com/photo-1553621042-f6e147245754"},
+{name:"Taco Plate",price:130,img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLjI-VrB5f2IYNqnLlaRJQEZ10G7oHJIprAQ&s"},
+{name:"Mango Float",price:100,img:"https://www.simplyrecipes.com/thmb/1OuJ0T1LN-I5W930_MYnWLo7U_Q=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Simply-Recipes-Mango-Float-LEAD-5-def4352d032943b58aa349c46f275483.jpg"},
+{name:"Pancake Stack",price:110,img:"https://www.southernliving.com/thmb/3CNz36ycvIjuHu4eKapgsXzz2i8=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/Muffin-Mix-Pancakes_3x2-Audit2773-055-485ac2a4dfae4e608e78fa48f36de999.jpg"},
+{name:"Ice Cream",price:85,img:"https://www.biggerbolderbaking.com/wp-content/uploads/2020/01/2-Ingredient-Ice-cream-Thumbnail-scaled.jpg"},
+{name:"Tapsilog",price:165,img:"https://www.recipeshare.app/_next/image?url=%2FimagesFood%2Fbeef-tapa-tapsilog.jpg&w=512&q=40"},
+{name:"Longsilog",price:150,img:"https://www.ajinomoto.com.ph/web/wp-content/uploads/2021/02/longsilog-2.jpg"},
+{name:"Tosilog",price:145,img:"https://amcarmenskitchen.com/wp-content/uploads/2018/10/1305.jpg?w=810"},
+{name:"Cornsilog",price:140,img:"https://titastravels.wordpress.com/wp-content/uploads/2021/02/corn-silog-1-tapa-king-fb-post.jpg"},
+{name:"Bangsilog",price:155,img:"https://media-cdn.tripadvisor.com/media/photo-p/10/25/8d/37/bangsilog.jpg"}
+
+];
+
+const foodContainer=document.getElementById("foods")
+
+foods.forEach(f=>{
+
+foodContainer.innerHTML+=`
+
+<div class="food">
+<img src="${f.img}">
+<div class="info">
+<h4>${f.name}</h4>
+<p>₱${f.price}</p>
+<button onclick="addToCart('${f.name}',${f.price})">Add to Cart</button>
+</div>
+</div>
+
+`
+
+})
+
+let cart=[]
+let total=0
+let userLoggedIn=false
+
+function toggleLoginPanel(show){
+const panel=document.getElementById("loginPanel")
+if(show){
+panel.classList.add("active")
+setTimeout(()=>document.getElementById("loginUsername").focus(),50)
+}else{
+panel.classList.remove("active")
+}
+}
+
+function ensureLogin(){
+if(!userLoggedIn){
+toggleLoginPanel(true)
+return false
+}
+return true
+}
+
+function toggleCart(){
+if(!ensureLogin()){
+return
+}
+document.getElementById("cart").classList.toggle("active")
+}
+
+function addToCart(name,price){
+if(!ensureLogin()){
+return
+}
+
+cart.push({name,price})
+total+=price
+renderCart()
+
+}
+
+function renderCart(){
+
+const c=document.getElementById("cartItems")
+const count=document.getElementById("itemCount")
+const empty=document.getElementById("cartEmpty")
+
+c.innerHTML=""
+
+if(cart.length === 0){
+empty.style.display = "block"
+count.innerText = "0 items"
+} else {
+empty.style.display = "none"
+count.innerText = `${cart.length} item${cart.length>1?"s":""}`
+
+cart.forEach((item,i)=>{
+
+c.innerHTML+=`
+<div class="cart-item">
+<span>${item.name}</span>
+<span>₱${item.price}</span>
+<span class="remove" onclick="removeItem(${i})">✖</span>
+</div>
+`
+
+})
+}
+
+document.getElementById("total").innerText=total
+
+}
+
+function removeItem(i){
+
+total-=cart[i].price
+cart.splice(i,1)
+
+renderCart()
+
+}
+
+function clearCart(){
+cart=[]
+total=0
+renderCart()
+}
+
+function checkout(){
+
+if(cart.length==0){
+alert("Cart empty")
+return
+}
+
+let payment=document.querySelector('input[name="paymentMethod"]:checked').value
+let location=document.getElementById("deliveryLocation").value.trim()
+
+if(location === ""){
+alert("Please enter a delivery location.")
+return
+}
+
+let receipt=document.getElementById("receipt")
+
+let text="Receipt<br><br>"
+
+cart.forEach(i=>{
+text+=`${i.name} - ₱${i.price}<br>`
+})
+
+text+=`<br>Total: ₱${total}`
+text+=`<br>Payment: ${payment}`
+text+=`<br>Location: ${location}`
+
+receipt.innerHTML=text
+receipt.style.display="block"
+
+document.getElementById("tracker").style.display="block"
+
+startTracking()
+
+cart=[]
+total=0
+renderCart()
+
+}
+
+function startTracking(){
+
+let status=document.getElementById("status")
+
+setTimeout(()=>status.innerText="Cooking",2000)
+setTimeout(()=>status.innerText="Rider Picking Up",5000)
+setTimeout(()=>status.innerText="On the Way",8000)
+setTimeout(()=>status.innerText="Delivered",12000)
+
+}
+
+function openUser(){
+const userButton=document.getElementById("userButton")
+const userStatus=document.getElementById("userStatus")
+
+if(!userLoggedIn){
+toggleLoginPanel(true)
+return
+}
+
+userLoggedIn=false
+userButton.innerText="Log In"
+userStatus.innerText="User: Logged out"
+alert("User logged out")
+}
+
+function submitLogin(){
+const username=document.getElementById("loginUsername").value.trim()
+const password=document.getElementById("loginPassword").value
+const userButton=document.getElementById("userButton")
+const userStatus=document.getElementById("userStatus")
+
+if(username === "" || password === ""){
+alert("Please enter both username and password.")
+return
+}
+
+userLoggedIn=true
+userButton.innerText="Logout"
+userStatus.innerText="User: Logged in"
+alert("Logged in successfully")
+toggleLoginPanel(false)
+}
+
+function loginWithFacebook(){
+window.open('https://www.facebook.com/login', '_blank');
+userLoggedIn=true
+document.getElementById("userButton").innerText="Logout"
+document.getElementById("userStatus").innerText="User: Logged in"
+alert("Redirecting to Facebook login...")
+toggleLoginPanel(false)
+}
+
+function loginWithInstagram(){
+window.open('https://www.instagram.com/accounts/login/', '_blank');
+userLoggedIn=true
+document.getElementById("userButton").innerText="Logout"
+document.getElementById("userStatus").innerText="User: Logged in"
+alert("Redirecting to Instagram login...")
+toggleLoginPanel(false)
+}
+
+function loginWithGoogle(){
+window.open('https://accounts.google.com/signin', '_blank');
+userLoggedIn=true
+document.getElementById("userButton").innerText="Logout"
+document.getElementById("userStatus").innerText="User: Logged in"
+alert("Redirecting to Google login...")
+toggleLoginPanel(false)
+}
+
+</script>
+
+</body>
+</html>
